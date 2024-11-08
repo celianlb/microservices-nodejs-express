@@ -1,0 +1,50 @@
+networks:
+  microservice-network:
+    driver: bridge
+
+services:
+  #gateway
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PRODUCT_SERVICE_URL=http://product-service:3002
+      - ORDER_SERVICE_URL=http://order-service:3003
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+    networks:
+      - microservice-network
+
+  #auth
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:1kvUgsBY3rXh@ep-odd-band-a8me2x5g.eastus2.azure.neon.tech/neondb?sslmode=require
+    networks:
+      - microservice-network
+
+  #product
+  product-service:
+    build: ./product-service
+    ports:
+      - "3002:3002"
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:ecA4jiawL1uU@ep-autumn-glade-a80o8skz.eastus2.azure.neon.tech/neondb?sslmode=require
+    networks:
+      - microservice-network
+
+  #order
+  order-service:
+    build: ./order-service
+    ports:
+      - "3003:3003"
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:qN0Sh8ebzJGL@ep-white-wave-a82pbb1h.eastus2.azure.neon.tech/neondb?sslmode=require
+    networks:
+      - microservice-network
